@@ -1,0 +1,46 @@
+package cput.ac.za.service;
+
+import cput.ac.za.domain.User;
+import cput.ac.za.repository.UserRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class UserService implements IUser{
+
+    private UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public User create(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User read(Long Id) {
+        return userRepository.findById(Id).orElse(null);
+    }
+
+    @Override
+    public User update(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public boolean delete(Long Id) {
+        if (userRepository.existsById(Id)) {
+            userRepository.deleteById(Id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userRepository.findAll();
+    }
+}
