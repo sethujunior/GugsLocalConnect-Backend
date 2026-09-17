@@ -11,6 +11,7 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -31,14 +32,19 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{userId}")
-    public boolean delete(@PathVariable Long userId)     {
+    public boolean delete(@PathVariable Long userId) {
         return userService.delete(userId);
     }
 
     @GetMapping("/getAll")
     public List<User> getAll() {
         return userService.getAll();
-}
+    }
+
+    @PostMapping("/create-customer")
+    public User createCustomer(@RequestBody User user) {
+        return userService.createCustomer(user);
+    }
 }
 
 
