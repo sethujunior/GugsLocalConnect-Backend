@@ -51,6 +51,7 @@ public class UserController {
     public User createbusiness(@RequestBody User user) {
         return userService.createbusinessOwner(user);
     }
+
     @PostMapping("/login")
     public User login(@RequestBody LoginRequest loginRequest) {
         return userService.login(

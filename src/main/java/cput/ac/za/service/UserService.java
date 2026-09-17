@@ -68,12 +68,11 @@ public class UserService implements IUser{
     @Override
     public User createbusinessOwner(User user) {
 
-        // Check if email already exists
+
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
 
-        // Automatically make the new account a BUSINESS_OWNER
         User newUser = new User.Builder()
                 .setName(user.getName())
                 .setEmail(user.getEmail())

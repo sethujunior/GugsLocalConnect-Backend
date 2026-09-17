@@ -76,7 +76,6 @@ public class BusinessProfile {
         private String businessName;
         private String description;
         private String location;
-        private String contactInfo;
 
         public Builder setBusinessProfileID(Long businessProfileID) {
             this.businessProfileID = businessProfileID;
@@ -100,10 +99,6 @@ public class BusinessProfile {
         }
         public Builder setLocation(String location) {
             this.location = location;
-            return this;
-        }
-        public Builder setContactInfo(String contactInfo) {
-            this.contactInfo = contactInfo;
             return this;
         }
 

@@ -1,6 +1,7 @@
 package cput.ac.za.controller;
 
 import cput.ac.za.domain.BusinessProfile;
+import cput.ac.za.dto.BusinessSignupRequest;
 import cput.ac.za.service.BusinesProfileService;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,5 +40,10 @@ public class BusinessProfileController {
     @GetMapping("/getAll")
     public List<BusinessProfile> getAll() {
         return businesProfileService.getAll();
+    }
+
+    @PostMapping("/create-business")
+    public BusinessProfile createBusiness(@RequestBody BusinessSignupRequest request) {
+        return businesProfileService.createBusiness(request);
     }
 }
