@@ -15,6 +15,13 @@ public class UserService implements IUser{
         this.userRepository = userRepository;
     }
 
+    public User login(String email, String password) {
+        User user = userRepository.findByEmail(email);
+        if (user == null || !user.getPasswordd().equals(password)) {
+            throw new RuntimeException("Invalid email or password");
+        }
+        return user;
+    }
     @Override
     public User create(User user) {
         return userRepository.save(user);

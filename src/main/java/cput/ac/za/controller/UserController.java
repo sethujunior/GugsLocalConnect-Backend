@@ -1,6 +1,7 @@
 package cput.ac.za.controller;
 
 import cput.ac.za.domain.User;
+import cput.ac.za.dto.LoginRequest;
 import cput.ac.za.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,10 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping("/login")
+    public User login(@RequestBody LoginRequest loginRequest) {
+        return userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+    }
     @PostMapping("/create")
     public User create(@RequestBody User user) {
         return userService.create(user);
