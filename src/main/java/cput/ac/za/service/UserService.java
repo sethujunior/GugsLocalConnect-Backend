@@ -16,13 +16,6 @@ public class UserService implements IUser{
         this.userRepository = userRepository;
     }
 
-    public User login(String email, String password) {
-        User user = userRepository.findByEmail(email);
-        if (user == null || !user.getPasswordd().equals(password)) {
-            throw new RuntimeException("Invalid email or password");
-        }
-        return user;
-    }
     @Override
     public User create(User user) {
         return userRepository.save(user);
@@ -64,11 +57,46 @@ public class UserService implements IUser{
         User newUser = new User.Builder()
                 .setName(user.getName())
                 .setEmail(user.getEmail())
-                .setPasswordHash(user.getPasswordd())
+                .setPasswordHash(user.getPassword())
                 .setPhone(user.getPhone())
                 .setRole(Role.CUSTOMER)
                 .build();
 
         return userRepository.save(newUser);
+    }
+
+    @Override
+    public User createbusinessOwner(User user) {
+
+        // Check if email already exists
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        // Automatically make the new account a BUSINESS_OWNER
+        User newUser = new User.Builder()
+                .setName(user.getName())
+                .setEmail(user.getEmail())
+                .setPasswordHash(user.getPassword())
+                .setPhone(user.getPhone())
+                .setRole(Role.BUSINESS_OWNER)
+                .build();
+
+        return userRepository.save(newUser);
+    }
+    @Override
+    public User login(String email, String password) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.getPassword() == null) {
+            throw new RuntimeException("User password is null");
+        }
+
+        if (!user.getPassword().equals(password)) {
+            throw new RuntimeException("Incorrect password");
+        }
+
+        return user;
     }
 }

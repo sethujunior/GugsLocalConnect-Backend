@@ -11,7 +11,7 @@ public class User {
     private Long userID;
     private String name;
     private String email;
-    private String passwordd;
+    private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
     private String phone;
@@ -23,7 +23,7 @@ public class User {
         this.userID = builder.userID;
         this.name = builder.name;
         this.email = builder.email;
-        this.passwordd = builder.passwordd;
+        this.password = builder.password;
         this.role = builder.role;
         this.phone = builder.phone;
     }
@@ -40,8 +40,9 @@ public class User {
         return email;
     }
 
-    public String getPasswordd() {
-        return passwordd;
+    @JsonIgnore
+    public String getPassword() {
+        return password;
     }
 
     public Role getRole() {
@@ -68,7 +69,7 @@ public class User {
         private Long userID;
         private String name;
         private String email;
-        private String passwordd;
+        private String password;
         private Role role;
         private String phone;
 
@@ -85,7 +86,7 @@ public class User {
             return this;
         }
         public Builder setPasswordHash(String passwordHash) {
-            this.passwordd = passwordHash;
+            this.password = passwordHash;
             return this;
         }
         public Builder setRole(Role role) {
@@ -101,7 +102,7 @@ public class User {
             this.userID = user.userID;
             this.name = user.name;
             this.email = user.email;
-            this.passwordd = user.passwordd;
+            this.password = user.password;
             this.role = user.role;
             this.phone = user.phone;
             return this;

@@ -18,8 +18,6 @@ public class BusinessProfile {
     private String businessName;
     private String description;
     private String location;
-    private String contactInfo;
-    private boolean verified;
 
     public BusinessProfile() {
     }
@@ -31,8 +29,6 @@ public class BusinessProfile {
         this.businessName = builder.businessName;
         this.description = builder.description;
         this.location = builder.location;
-        this.contactInfo = builder.contactInfo;
-        this.verified = builder.verified;
     }
 
     public Long getBusinessProfileID() {
@@ -59,13 +55,7 @@ public class BusinessProfile {
         return location;
     }
 
-    public String getContactInfo() {
-        return contactInfo;
-    }
 
-    public boolean isVerified() {
-        return verified;
-    }
 
     @Override
     public String toString() {
@@ -76,8 +66,6 @@ public class BusinessProfile {
                 ", businessName='" + businessName + '\'' +
                 ", description='" + description + '\'' +
                 ", location='" + location + '\'' +
-                ", contactInfo='" + contactInfo + '\'' +
-                ", verified=" + verified +
                 '}';
     }
 
@@ -89,7 +77,6 @@ public class BusinessProfile {
         private String description;
         private String location;
         private String contactInfo;
-        private boolean verified;
 
         public Builder setBusinessProfileID(Long businessProfileID) {
             this.businessProfileID = businessProfileID;
@@ -119,10 +106,7 @@ public class BusinessProfile {
             this.contactInfo = contactInfo;
             return this;
         }
-        public Builder setVerified(boolean verified) {
-            this.verified = verified;
-            return this;
-        }
+
 
         public Builder copy(BusinessProfile businessProfile) {
             this.businessProfileID = businessProfile.businessProfileID;
@@ -131,8 +115,6 @@ public class BusinessProfile {
             this.businessName = businessProfile.businessName;
             this.description = businessProfile.description;
             this.location = businessProfile.location;
-            this.contactInfo = businessProfile.contactInfo;
-            this.verified = businessProfile.verified;
             return this;
         }
 

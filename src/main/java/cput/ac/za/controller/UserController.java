@@ -17,10 +17,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
-    public User login(@RequestBody LoginRequest loginRequest) {
-        return userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-    }
     @PostMapping("/create")
     public User create(@RequestBody User user) {
         return userService.create(user);
@@ -49,6 +45,17 @@ public class UserController {
     @PostMapping("/create-customer")
     public User createCustomer(@RequestBody User user) {
         return userService.createCustomer(user);
+    }
+
+    @PostMapping("/create-businessOwner")
+    public User createbusiness(@RequestBody User user) {
+        return userService.createbusinessOwner(user);
+    }
+    @PostMapping("/login")
+    public User login(@RequestBody LoginRequest loginRequest) {
+        return userService.login(
+                loginRequest.getEmail(),
+                loginRequest.getPassword());
     }
 }
 
