@@ -17,7 +17,7 @@ public class UserService implements IUser{
 
     public User login(String email, String password) {
         User user = userRepository.findByEmail(email);
-        if (user == null || !user.getPasswordd().equals(password)) {
+        if (user == null || !user.getPassword().equals(password)) {
             throw new RuntimeException("Invalid email or password");
         }
         return user;

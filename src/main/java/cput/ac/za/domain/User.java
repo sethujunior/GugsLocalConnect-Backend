@@ -10,7 +10,7 @@ public class User {
     private Long userID;
     private String name;
     private String email;
-    private String passwordd;
+    private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
     private String phone;
@@ -22,7 +22,7 @@ public class User {
         this.userID = builder.userID;
         this.name = builder.name;
         this.email = builder.email;
-        this.passwordd = builder.passwordHash;
+        this.password = builder.passwordHash;
         this.role = builder.role;
         this.phone = builder.phone;
     }
@@ -39,8 +39,8 @@ public class User {
         return email;
     }
 
-    public String getPasswordd() {
-        return passwordd;
+    public String getPassword() {
+        return password;
     }
 
     public Role getRole() {
@@ -100,7 +100,7 @@ public class User {
             this.userID = user.userID;
             this.name = user.name;
             this.email = user.email;
-            this.passwordHash = user.passwordd;
+            this.passwordHash = user.password;
             this.role = user.role;
             this.phone = user.phone;
             return this;
