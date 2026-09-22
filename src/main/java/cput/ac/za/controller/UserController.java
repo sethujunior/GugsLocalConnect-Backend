@@ -13,6 +13,7 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -47,7 +48,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{userId}")
-    public boolean delete(@PathVariable Long userId)     {
+    public boolean delete(@PathVariable Long userId) {
         return userService.delete(userId);
     }
 
@@ -56,3 +57,23 @@ public class UserController {
         return userService.getAll();
     }
 }
+
+    @PostMapping("/create-customer")
+    public User createCustomer(@RequestBody User user) {
+        return userService.createCustomer(user);
+    }
+
+    @PostMapping("/create-businessOwner")
+    public User createbusiness(@RequestBody User user) {
+        return userService.createbusinessOwner(user);
+    }
+
+    @PostMapping("/login")
+    public User login(@RequestBody LoginRequest loginRequest) {
+        return userService.login(
+                loginRequest.getEmail(),
+                loginRequest.getPassword());
+    }
+}
+
+

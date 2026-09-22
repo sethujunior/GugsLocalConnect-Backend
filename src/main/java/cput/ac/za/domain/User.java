@@ -1,5 +1,6 @@
 package cput.ac.za.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -23,6 +24,7 @@ public class User {
         this.name = builder.name;
         this.email = builder.email;
         this.password = builder.passwordHash;
+        this.password = builder.password;
         this.role = builder.role;
         this.phone = builder.phone;
     }
@@ -39,6 +41,7 @@ public class User {
         return email;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -67,7 +70,7 @@ public class User {
         private Long userID;
         private String name;
         private String email;
-        private String passwordHash;
+        private String password;
         private Role role;
         private String phone;
 
@@ -84,7 +87,7 @@ public class User {
             return this;
         }
         public Builder setPasswordHash(String passwordHash) {
-            this.passwordHash = passwordHash;
+            this.password = passwordHash;
             return this;
         }
         public Builder setRole(Role role) {
@@ -101,6 +104,7 @@ public class User {
             this.name = user.name;
             this.email = user.email;
             this.passwordHash = user.password;
+            this.password = user.password;
             this.role = user.role;
             this.phone = user.phone;
             return this;

@@ -49,3 +49,9 @@ public class BusinessProfileController {
         return businesProfileService.getAll();
     }
 }
+
+    @PostMapping("/create-business")
+    public BusinessProfile createBusiness(@RequestBody BusinessSignupRequest request) {
+        return businesProfileService.createBusiness(request);
+    }
+}
