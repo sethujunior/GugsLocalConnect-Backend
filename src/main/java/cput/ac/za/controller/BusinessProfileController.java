@@ -17,6 +17,13 @@ public class BusinessProfileController {
         this.businesProfileService = businesProfileService;
     }
 
+    // Business signup: creates the User (login identity) and the
+    // BusinessProfile (business details) together in one request.
+    @PostMapping("/create-business")
+    public BusinessProfile createBusiness(@RequestBody BusinessSignupRequest request) {
+        return businesProfileService.signupBusiness(request);
+    }
+
     @PostMapping("/create")
     public BusinessProfile create(@RequestBody BusinessProfile businessProfile) {
         return businesProfileService.create(businessProfile);
@@ -41,6 +48,7 @@ public class BusinessProfileController {
     public List<BusinessProfile> getAll() {
         return businesProfileService.getAll();
     }
+}
 
     @PostMapping("/create-business")
     public BusinessProfile createBusiness(@RequestBody BusinessSignupRequest request) {
