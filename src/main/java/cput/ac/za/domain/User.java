@@ -23,6 +23,7 @@ public class User {
         this.userID = builder.userID;
         this.name = builder.name;
         this.email = builder.email;
+        this.password = builder.passwordHash;
         this.password = builder.password;
         this.role = builder.role;
         this.phone = builder.phone;
@@ -102,6 +103,7 @@ public class User {
             this.userID = user.userID;
             this.name = user.name;
             this.email = user.email;
+            this.passwordHash = user.password;
             this.password = user.password;
             this.role = user.role;
             this.phone = user.phone;

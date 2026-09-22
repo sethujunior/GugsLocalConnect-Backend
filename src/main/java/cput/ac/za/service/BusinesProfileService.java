@@ -13,10 +13,49 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class BusinesProfileService implements IBusinessProfile{
+public class BusinesProfileService implements IBusinessProfile {
 
     private BusinessProfileRepository businessProfileRepository;
     private CategoryRepository categoryRepository;
+    private UserService userService;
+
+    public BusinesProfileService(BusinessProfileRepository businessProfileRepository,
+                                 CategoryRepository categoryRepository,
+                                 UserService userService) {
+        this.businessProfileRepository = businessProfileRepository;
+        this.categoryRepository = categoryRepository;
+        this.userService = userService;
+    }
+
+    // Creates the User (login identity, role = BUSINESS_OWNER) and the
+    // linked BusinessProfile (business details) together, in one call.
+    public BusinessProfile signupBusiness(BusinessSignupRequest request) {
+
+        User newOwner = new User.Builder()
+                .setName(request.getName())
+                .setEmail(request.getEmail())
+                .setPasswordHash(request.getPassword())
+                .setPhone(request.getPhone())
+                .setRole(Role.BUSINESS_OWNER)
+                .build();
+
+        User savedOwner = userService.create(newOwner);
+
+        Category category = categoryRepository.findByName(request.getCategory());
+        if (category == null) {
+            throw new RuntimeException("Unknown category: " + request.getCategory());
+        }
+
+        BusinessProfile profile = new BusinessProfile.Builder()
+                .setOwner(savedOwner)
+                .setCategory(category)
+                .setBusinessName(request.getBusinessName())
+                .setLocation(request.getLocation())
+                .setDescription(request.getDescription())
+                .setVerified(false)
+                .build();
+
+        return businessProfileRepository.save(profile);
     private UserRepository userRepository;
 
     public BusinesProfileService(BusinessProfileRepository businessProfileRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
@@ -53,6 +92,7 @@ public class BusinesProfileService implements IBusinessProfile{
     public List<BusinessProfile> getAll() {
         return businessProfileRepository.findAll();
     }
+}
 
     public BusinessProfile createBusiness(BusinessSignupRequest request) {
 
