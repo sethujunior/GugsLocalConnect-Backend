@@ -43,4 +43,8 @@ public class ReviewService implements IService<Review,Long> {
     public List<Review> getAll() {
         return reviewRepository.findAll();
     }
+
+    public List<Review> getForBusiness(Long businessProfileId) {
+        return reviewRepository.findByBusinessProfile_BusinessProfileID(businessProfileId);
+    }
 }

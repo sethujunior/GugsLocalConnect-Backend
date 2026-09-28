@@ -1,5 +1,6 @@
 package cput.ac.za.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -34,6 +35,7 @@ public class Message {
         this.sentAt = LocalDateTime.now();
     }
 
+    @JsonProperty("id")
     public Long getMessageID() {
         return messageID;
     }
@@ -44,6 +46,16 @@ public class Message {
 
     public User getReceiver() {
         return receiver;
+    }
+
+    @JsonProperty("senderId")
+    public Long getSenderId() {
+        return sender != null ? sender.getUserID() : null;
+    }
+
+    @JsonProperty("receiverId")
+    public Long getReceiverId() {
+        return receiver != null ? receiver.getUserID() : null;
     }
 
     public String getContent() {

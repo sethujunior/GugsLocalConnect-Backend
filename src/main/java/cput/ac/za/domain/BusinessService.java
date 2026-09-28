@@ -1,5 +1,6 @@
 package cput.ac.za.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,6 +15,10 @@ public class BusinessService {
     private String name;
     private String description;
     private String priceRange;
+    // Added alongside priceRange (kept for backward compatibility) because
+    // the Angular ServiceItem model sends/expects a plain number, not a
+    // range string.
+    private Double price;
 
     public BusinessService() {
     }
@@ -24,16 +29,24 @@ public class BusinessService {
         this.name = builder.name;
         this.description = builder.description;
         this.priceRange = builder.priceRange;
+        this.price = builder.price;
     }
 
+    @JsonProperty("id")
     public Long getServiceID() {
         return serviceID;
+    }
+
+    @JsonProperty("businessId")
+    public Long getBusinessId() {
+        return businessProfile != null ? businessProfile.getBusinessProfileID() : null;
     }
 
     public BusinessProfile getBusinessProfile() {
         return businessProfile;
     }
 
+    @JsonProperty("title")
     public String getName() {
         return name;
     }
@@ -46,6 +59,10 @@ public class BusinessService {
         return priceRange;
     }
 
+    public Double getPrice() {
+        return price;
+    }
+
     @Override
     public String toString() {
         return "Service{" +
@@ -54,6 +71,7 @@ public class BusinessService {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", priceRange='" + priceRange + '\'' +
+                ", price=" + price +
                 '}';
     }
 
@@ -63,6 +81,7 @@ public class BusinessService {
         private String name;
         private String description;
         private String priceRange;
+        private Double price;
 
         public Builder setServiceID(Long serviceID) {
             this.serviceID = serviceID;
@@ -84,6 +103,10 @@ public class BusinessService {
             this.priceRange = priceRange;
             return this;
         }
+        public Builder setPrice(Double price) {
+            this.price = price;
+            return this;
+        }
 
         public Builder copy(BusinessService service) {
             this.serviceID = service.serviceID;
@@ -91,6 +114,7 @@ public class BusinessService {
             this.name = service.name;
             this.description = service.description;
             this.priceRange = service.priceRange;
+            this.price = service.price;
             return this;
         }
 

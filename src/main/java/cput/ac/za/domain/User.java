@@ -1,6 +1,7 @@
 package cput.ac.za.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -23,12 +24,14 @@ public class User {
         this.userID = builder.userID;
         this.name = builder.name;
         this.email = builder.email;
-        this.password = builder.passwordHash;
         this.password = builder.password;
         this.role = builder.role;
         this.phone = builder.phone;
     }
 
+    // Alias so JSON output matches the Angular User model's "id" field
+    // without renaming the underlying userID field/getter used elsewhere.
+    @JsonProperty("id")
     public Long getUserID() {
         return userID;
     }
@@ -103,7 +106,6 @@ public class User {
             this.userID = user.userID;
             this.name = user.name;
             this.email = user.email;
-            this.passwordHash = user.password;
             this.password = user.password;
             this.role = user.role;
             this.phone = user.phone;

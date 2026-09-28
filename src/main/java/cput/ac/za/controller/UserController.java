@@ -1,40 +1,21 @@
 package cput.ac.za.controller;
 
-import cput.ac.za.domain.Role;
 import cput.ac.za.domain.User;
-import cput.ac.za.dto.LoginRequest;
 import cput.ac.za.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// Plain CRUD over users. Signup and login live in AuthController now,
+// since those need to issue JWTs and enforce role-specific rules.
 @RestController
-@RequestMapping("users")
+@RequestMapping("/api/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    @PostMapping("/login")
-    public User login(@RequestBody LoginRequest loginRequest) {
-        return userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-    }
-
-    @PostMapping("/create")
-    public User create(@RequestBody User user) {
-        // This endpoint is for customer signup only — force the role
-        // server-side rather than trusting whatever the client sends.
-        User.Builder builder = new User.Builder()
-                .setName(user.getName())
-                .setEmail(user.getEmail())
-                .setPasswordHash(user.getPassword())
-                .setPhone(user.getPhone())
-                .setRole(Role.CUSTOMER);
-
-        return userService.create(builder.build());
     }
 
     @GetMapping("/read/{userId}")
@@ -57,23 +38,3 @@ public class UserController {
         return userService.getAll();
     }
 }
-
-    @PostMapping("/create-customer")
-    public User createCustomer(@RequestBody User user) {
-        return userService.createCustomer(user);
-    }
-
-    @PostMapping("/create-businessOwner")
-    public User createbusiness(@RequestBody User user) {
-        return userService.createbusinessOwner(user);
-    }
-
-    @PostMapping("/login")
-    public User login(@RequestBody LoginRequest loginRequest) {
-        return userService.login(
-                loginRequest.getEmail(),
-                loginRequest.getPassword());
-    }
-}
-
-

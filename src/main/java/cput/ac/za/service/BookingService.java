@@ -42,4 +42,8 @@ public class BookingService implements IBooking{
     public List<Booking> getAll() {
         return bookingRepository.findAll();
     }
+
+    public List<Booking> getAllForUser(Long userId) {
+        return bookingRepository.findAllForUser(userId);
+    }
 }

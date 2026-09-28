@@ -1,6 +1,8 @@
 package cput.ac.za.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "review")
@@ -16,6 +18,7 @@ public class Review {
     private User customer;
     private Integer rating;
     private String comment;
+    private LocalDateTime createdAt;
 
     public Review() {
     }
@@ -25,9 +28,16 @@ public class Review {
         this.businessProfile = builder.businessProfile;
         this.customer = builder.customer;
         this.rating = builder.rating;
-        this.comment = builder.comment;}
+        this.comment = builder.comment;
+        this.createdAt = builder.createdAt;
+    }
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
+    @JsonProperty("id")
     public Long getReviewID() {
         return reviewID;
     }
@@ -36,8 +46,18 @@ public class Review {
         return businessProfile;
     }
 
+    @JsonProperty("businessId")
+    public Long getBusinessId() {
+        return businessProfile != null ? businessProfile.getBusinessProfileID() : null;
+    }
+
     public User getCustomer() {
         return customer;
+    }
+
+    @JsonProperty("authorName")
+    public String getAuthorName() {
+        return customer != null ? customer.getName() : "Anonymous";
     }
 
     public Integer getRating() {
@@ -48,6 +68,9 @@ public class Review {
         return comment;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
     @Override
     public String toString() {
@@ -66,6 +89,7 @@ public class Review {
         private User customer;
         private Integer rating;
         private String comment;
+        private LocalDateTime createdAt;
 
         public Builder setReviewID(Long reviewID) {
             this.reviewID = reviewID;
@@ -87,6 +111,10 @@ public class Review {
             this.comment = comment;
             return this;
         }
+        public Builder setCreatedAt(LocalDateTime createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
 
         public Builder copy(Review review) {
             this.reviewID = review.reviewID;
@@ -94,6 +122,7 @@ public class Review {
             this.customer = review.customer;
             this.rating = review.rating;
             this.comment = review.comment;
+            this.createdAt = review.createdAt;
             return this;
         }
 
