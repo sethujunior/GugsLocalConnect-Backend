@@ -2,35 +2,32 @@ package cput.ac.za.service;
 
 import cput.ac.za.domain.Role;
 import cput.ac.za.domain.User;
+import cput.ac.za.dto.CustomerSignupRequest;
 import cput.ac.za.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UserService implements IUser{
+public class UserService implements IUser {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public User login(String email, String password) {
-        User user = userRepository.findByEmail(email);
-        if (user == null || !user.getPassword().equals(password)) {
-            throw new RuntimeException("Invalid email or password");
-        }
-        return user;
-    }
     @Override
     public User create(User user) {
         return userRepository.save(user);
     }
 
     @Override
-    public User read(Long Id) {
-        return userRepository.findById(Id).orElse(null);
+    public User read(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -39,9 +36,9 @@ public class UserService implements IUser{
     }
 
     @Override
-    public boolean delete(Long Id) {
-        if (userRepository.existsById(Id)) {
-            userRepository.deleteById(Id);
+    public boolean delete(Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
             return true;
         }
         return false;
@@ -53,19 +50,16 @@ public class UserService implements IUser{
     }
 
     @Override
-    public User createCustomer(User user) {
-
-        // Check if email already exists
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+    public User createCustomer(CustomerSignupRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
 
-        // Automatically make the new account a CUSTOMER
         User newUser = new User.Builder()
-                .setName(user.getName())
-                .setEmail(user.getEmail())
-                .setPasswordHash(user.getPassword())
-                .setPhone(user.getPhone())
+                .setName(request.getName())
+                .setEmail(request.getEmail())
+                .setPasswordHash(passwordEncoder.encode(request.getPassword()))
+                .setPhone(request.getPhone())
                 .setRole(Role.CUSTOMER)
                 .build();
 
@@ -74,8 +68,6 @@ public class UserService implements IUser{
 
     @Override
     public User createbusinessOwner(User user) {
-
-
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
@@ -83,24 +75,23 @@ public class UserService implements IUser{
         User newUser = new User.Builder()
                 .setName(user.getName())
                 .setEmail(user.getEmail())
-                .setPasswordHash(user.getPassword())
+                .setPasswordHash(passwordEncoder.encode(user.getPassword()))
                 .setPhone(user.getPhone())
                 .setRole(Role.BUSINESS_OWNER)
                 .build();
 
         return userRepository.save(newUser);
     }
+    public User findByEmailRaw(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
     @Override
     public User login(String email, String password) {
-
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        if (user.getPassword() == null) {
-            throw new RuntimeException("User password is null");
-        }
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        if (!user.getPassword().equals(password)) {
-            throw new RuntimeException("Incorrect password");
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
         }
 
         return user;

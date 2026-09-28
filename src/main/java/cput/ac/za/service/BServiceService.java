@@ -43,4 +43,8 @@ public class BServiceService implements IBService{
     public List<BusinessService> getAll() {
         return businessServiceRepository.findAll();
     }
+
+    public List<BusinessService> findByBusinessProfileId(Long businessProfileId) {
+        return businessServiceRepository.findByBusinessProfile_BusinessProfileID(businessProfileId);
+    }
 }

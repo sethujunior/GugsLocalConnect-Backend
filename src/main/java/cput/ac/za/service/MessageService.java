@@ -43,4 +43,12 @@ public class MessageService implements IService<Message,Long> {
     public List<Message> getAll() {
         return messageRepository.findAll();
     }
+
+    public List<Message> getAllForUser(Long userId) {
+        return messageRepository.findAllForUser(userId);
+    }
+
+    public List<Message> getConversation(Long userId, Long otherUserId) {
+        return messageRepository.findConversation(userId, otherUserId);
+    }
 }

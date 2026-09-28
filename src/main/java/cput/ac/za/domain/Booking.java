@@ -1,7 +1,9 @@
 package cput.ac.za.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,7 +23,12 @@ public class Booking {
     private BusinessService service;
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
+    // When the request was made (audit timestamp, set automatically).
     private LocalDateTime requestedAt;
+    // The date the customer actually wants the service performed — this
+    // didn't exist before; the Angular booking form collects it but there
+    // was nowhere on this entity to put it.
+    private LocalDate requestedDate;
 
     public Booking() {
     }
@@ -33,6 +40,7 @@ public class Booking {
         this.service = builder.service;
         this.status = builder.status;
         this.requestedAt = builder.requestedAt;
+        this.requestedDate = builder.requestedDate;
     }
 
     @PrePersist
@@ -43,6 +51,7 @@ public class Booking {
         }
     }
 
+    @JsonProperty("id")
     public Long getBookingID() {
         return bookingID;
     }
@@ -51,12 +60,27 @@ public class Booking {
         return customer;
     }
 
+    @JsonProperty("customerId")
+    public Long getCustomerId() {
+        return customer != null ? customer.getUserID() : null;
+    }
+
     public BusinessProfile getBusinessProfile() {
         return businessProfile;
     }
 
+    @JsonProperty("businessId")
+    public Long getBusinessId() {
+        return businessProfile != null ? businessProfile.getBusinessProfileID() : null;
+    }
+
     public BusinessService getService() {
         return service;
+    }
+
+    @JsonProperty("serviceId")
+    public Long getServiceId() {
+        return service != null ? service.getServiceID() : null;
     }
 
     public BookingStatus getStatus() {
@@ -65,6 +89,12 @@ public class Booking {
 
     public LocalDateTime getRequestedAt() {
         return requestedAt;
+    }
+
+    // Angular's Booking.date maps to this — the customer-chosen date.
+    @JsonProperty("date")
+    public LocalDate getRequestedDate() {
+        return requestedDate;
     }
 
     @Override
@@ -76,6 +106,7 @@ public class Booking {
                 ", service=" + service +
                 ", status=" + status +
                 ", requestedAt=" + requestedAt +
+                ", requestedDate=" + requestedDate +
                 '}';
     }
 
@@ -86,6 +117,7 @@ public class Booking {
         private BusinessService service;
         private BookingStatus status;
         private LocalDateTime requestedAt;
+        private LocalDate requestedDate;
 
         public Builder setBookingID(Long bookingID) {
             this.bookingID = bookingID;
@@ -111,6 +143,10 @@ public class Booking {
             this.requestedAt = requestedAt;
             return this;
         }
+        public Builder setRequestedDate(LocalDate requestedDate) {
+            this.requestedDate = requestedDate;
+            return this;
+        }
 
         public Builder copy(Booking booking) {
             this.bookingID = booking.bookingID;
@@ -119,6 +155,7 @@ public class Booking {
             this.service = booking.service;
             this.status = booking.status;
             this.requestedAt = booking.requestedAt;
+            this.requestedDate = booking.requestedDate;
             return this;
         }
 

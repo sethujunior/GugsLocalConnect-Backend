@@ -7,44 +7,54 @@ import cput.ac.za.domain.User;
 import cput.ac.za.dto.BusinessSignupRequest;
 import cput.ac.za.repository.BusinessProfileRepository;
 import cput.ac.za.repository.CategoryRepository;
-import cput.ac.za.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
 public class BusinesProfileService implements IBusinessProfile {
 
-    private BusinessProfileRepository businessProfileRepository;
-    private CategoryRepository categoryRepository;
-    private UserService userService;
+    private final BusinessProfileRepository businessProfileRepository;
+    private final CategoryRepository categoryRepository;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
-    public BusinesProfileService(BusinessProfileRepository businessProfileRepository,
-                                 CategoryRepository categoryRepository,
-                                 UserService userService) {
+    public BusinesProfileService(
+            BusinessProfileRepository businessProfileRepository,
+            CategoryRepository categoryRepository,
+            UserService userService,
+            PasswordEncoder passwordEncoder
+    ) {
         this.businessProfileRepository = businessProfileRepository;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // Creates the User (login identity, role = BUSINESS_OWNER) and the
-    // linked BusinessProfile (business details) together, in one call.
+    // linked BusinessProfile (business details) together, in one call —
+    // goes through UserService so email-uniqueness and password hashing
+    // stay in one place rather than being duplicated here.
+    @Transactional
     public BusinessProfile signupBusiness(BusinessSignupRequest request) {
+
+        if (userService.findByEmailRaw(request.getEmail()) != null) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        Category category = categoryRepository.findByName(request.getCategory())
+                .orElseThrow(() -> new RuntimeException("Unknown category: " + request.getCategory()));
 
         User newOwner = new User.Builder()
                 .setName(request.getName())
                 .setEmail(request.getEmail())
-                .setPasswordHash(request.getPassword())
+                .setPasswordHash(passwordEncoder.encode(request.getPassword()))
                 .setPhone(request.getPhone())
                 .setRole(Role.BUSINESS_OWNER)
                 .build();
 
         User savedOwner = userService.create(newOwner);
-
-        Category category = categoryRepository.findByName(request.getCategory());
-        if (category == null) {
-            throw new RuntimeException("Unknown category: " + request.getCategory());
-        }
 
         BusinessProfile profile = new BusinessProfile.Builder()
                 .setOwner(savedOwner)
@@ -56,12 +66,6 @@ public class BusinesProfileService implements IBusinessProfile {
                 .build();
 
         return businessProfileRepository.save(profile);
-    private UserRepository userRepository;
-
-    public BusinesProfileService(BusinessProfileRepository businessProfileRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
-        this.businessProfileRepository = businessProfileRepository;
-        this.categoryRepository = categoryRepository;
-        this.userRepository = userRepository;
     }
 
     @Override
@@ -70,8 +74,8 @@ public class BusinesProfileService implements IBusinessProfile {
     }
 
     @Override
-    public BusinessProfile read(Long aLong) {
-        return businessProfileRepository.findById(aLong).orElse(null);
+    public BusinessProfile read(Long id) {
+        return businessProfileRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -80,9 +84,9 @@ public class BusinesProfileService implements IBusinessProfile {
     }
 
     @Override
-    public boolean delete(Long Id) {
-        if (businessProfileRepository.existsById(Id)) {
-            businessProfileRepository.deleteById(Id);
+    public boolean delete(Long id) {
+        if (businessProfileRepository.existsById(id)) {
+            businessProfileRepository.deleteById(id);
             return true;
         }
         return false;
@@ -92,35 +96,22 @@ public class BusinesProfileService implements IBusinessProfile {
     public List<BusinessProfile> getAll() {
         return businessProfileRepository.findAll();
     }
-}
 
-    public BusinessProfile createBusiness(BusinessSignupRequest request) {
+    public BusinessProfile findByOwnerId(Long ownerId) {
+        return businessProfileRepository.findByOwner_UserID(ownerId)
+                .orElseThrow(() -> new RuntimeException("No business profile found for this account"));
+    }
 
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
-        }
+    public List<BusinessProfile> search(String q, String category) {
+        String needle = q != null ? q.toLowerCase() : null;
 
-        User owner = new User.Builder()
-                .setName(request.getName())
-                .setEmail(request.getEmail())
-                .setPasswordHash(request.getPassword())
-                .setPhone(request.getPhone())
-                .setRole(Role.BUSINESS_OWNER)
-                .build();
-
-        User savedOwner = userRepository.save(owner);
-
-        Category category = categoryRepository.findByName(request.getCategory())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-
-        BusinessProfile businessProfile = new BusinessProfile.Builder()
-                .setOwner(savedOwner)
-                .setCategory(category)
-                .setBusinessName(request.getBusinessName())
-                .setLocation(request.getLocation())
-                .setDescription(request.getDescription())
-                .build();
-
-        return businessProfileRepository.save(businessProfile);
+        return businessProfileRepository.findAll().stream()
+                .filter(bp -> category == null || category.isBlank()
+                        || (bp.getCategory() != null && bp.getCategory().getName().equalsIgnoreCase(category)))
+                .filter(bp -> needle == null || needle.isBlank()
+                        || (bp.getBusinessName() != null && bp.getBusinessName().toLowerCase().contains(needle))
+                        || (bp.getDescription() != null && bp.getDescription().toLowerCase().contains(needle))
+                        || (bp.getCategory() != null && bp.getCategory().getName().toLowerCase().contains(needle)))
+                .toList();
     }
 }

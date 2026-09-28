@@ -1,5 +1,6 @@
 package cput.ac.za.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -18,6 +19,7 @@ public class Category {
         this.name = builder.name;
     }
 
+    @JsonProperty("id")
     public Long getCategoryID() {
         return categoryID;
     }
